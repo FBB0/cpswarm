@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- Load Parameter -->
+  
+  <node pkg="lidar_preprocess" type="lidar_preprocess.py" name="lidar_preprocess_node" output="screen" >
+  </node>
+
+</launch>

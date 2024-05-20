@@ -1,0 +1,17 @@
+<launch>
+
+    <param name="/use_sim_time" value="true" />
+    
+    <!-- Load the map -->
+    <arg name="map_file" default="$(find amcl)/map/test_barn.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
+    <!-- Run AMCL -->
+    <include file="$(find amcl)/examples/amcl_diff.launch">
+    </include>
+
+    <!-- Play ROS bag -->
+    <node name="playbag" pkg="rosbag" type="play" args="--clock /home/xaviergg/Desktop/RO_MDP/rosbag/6-new-barn-no-depth-2024-05-14-18-23-59.bag" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find amcl)/launch/rivz.rviz"/>
+
+</launch>
