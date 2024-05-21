@@ -1,0 +1,7 @@
+<launch>
+    <!-- Start teleop_twist_keyboard node -->
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" output="screen">
+        <param name="scale_linear" value="0.4"/> <!-- Set custom linear velocity scale -->
+        <param name="scale_angular" value="1.9"/> <!-- Set custom angular velocity scale -->
+    </node>
+</launch>
