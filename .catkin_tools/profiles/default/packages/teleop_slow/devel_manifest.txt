@@ -1,0 +1,5 @@
+control/teleop_slow
+/home/mirte/group13/devel/.private/teleop_slow/cmake.lock /home/mirte/group13/devel/./cmake.lock
+/home/mirte/group13/devel/.private/teleop_slow/share/teleop_slow/cmake/teleop_slowConfig.cmake /home/mirte/group13/devel/share/teleop_slow/cmake/teleop_slowConfig.cmake
+/home/mirte/group13/devel/.private/teleop_slow/share/teleop_slow/cmake/teleop_slowConfig-version.cmake /home/mirte/group13/devel/share/teleop_slow/cmake/teleop_slowConfig-version.cmake
+/home/mirte/group13/devel/.private/teleop_slow/lib/pkgconfig/teleop_slow.pc /home/mirte/group13/devel/lib/pkgconfig/teleop_slow.pc

@@ -1,4 +1,6 @@
 __pycache__
 .vscode/
 build/
+devel/
+logs/
 .gitlab-ci-local/

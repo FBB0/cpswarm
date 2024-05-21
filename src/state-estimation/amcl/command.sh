@@ -1,0 +1,1 @@
+rosbag record /mobile_base_controller/odom /scan /tf /tf_static /camera/color/image_raw /camera/depth/image_raw /mobile_base_controller/cmd_vel /map /map_metadata /rosout /initialpose /amcl/parameter_descriptions /amcl/parameter_updates /amcl_pose /diagnostics /particlecloud

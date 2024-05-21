@@ -1,0 +1,8 @@
+state-estimation/slam_gmapping/gmapping
+/home/mirte/group13/devel/.private/gmapping/cmake.lock /home/mirte/group13/devel/./cmake.lock
+/home/mirte/group13/devel/.private/gmapping/share/gmapping/cmake/gmappingConfig.cmake /home/mirte/group13/devel/share/gmapping/cmake/gmappingConfig.cmake
+/home/mirte/group13/devel/.private/gmapping/share/gmapping/cmake/gmappingConfig-version.cmake /home/mirte/group13/devel/share/gmapping/cmake/gmappingConfig-version.cmake
+/home/mirte/group13/devel/.private/gmapping/lib/libslam_gmapping_nodelet.so /home/mirte/group13/devel/lib/libslam_gmapping_nodelet.so
+/home/mirte/group13/devel/.private/gmapping/lib/gmapping/slam_gmapping /home/mirte/group13/devel/lib/gmapping/slam_gmapping
+/home/mirte/group13/devel/.private/gmapping/lib/gmapping/slam_gmapping_replay /home/mirte/group13/devel/lib/gmapping/slam_gmapping_replay
+/home/mirte/group13/devel/.private/gmapping/lib/pkgconfig/gmapping.pc /home/mirte/group13/devel/lib/pkgconfig/gmapping.pc
