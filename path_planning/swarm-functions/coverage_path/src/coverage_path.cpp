@@ -17,6 +17,8 @@ nav_msgs::OccupancyGrid latest_robot3_grid;
 
 // Callback functions to handle incoming grid data for each robot
 void robot1GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
+    
+
     std::lock_guard<std::mutex> lock(grid_mutex);
     if (msg->info.width == 0 || msg->info.height == 0 || msg->info.resolution <= 0.0) {
         ROS_WARN("Received an invalid grid.");
@@ -34,17 +36,21 @@ void robot1GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
 }
 
 void robot2GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
+    ROS_INFO("Grid for Robot 2 received with width %d and height %d", msg->info.width, msg->info.height);
     std::lock_guard<std::mutex> lock(grid_mutex);
     if (msg->info.width == 0 || msg->info.height == 0 || msg->info.resolution <= 0.0) {
         ROS_WARN("Received an invalid grid.");
+        ROS_INFO("RRRRRRRRRRRRR2");
         return;
     }
     geometry_msgs::Point start_position2;
-    start_position2.x = 0.0;
-    start_position2.y = 0.0;
+    start_position2.x = 19.0;
+    start_position2.y = 19.0;
 
     // Process the grid data for robot1
     latest_robot2_grid = *msg; // Store the latest grid
+    
+
 
     generate_path(start_position2, latest_robot2_grid, path_publisher2);
 }
@@ -53,6 +59,7 @@ void robot3GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
     std::lock_guard<std::mutex> lock(grid_mutex);
     if (msg->info.width == 0 || msg->info.height == 0 || msg->info.resolution <= 0.0) {
         ROS_WARN("Received an invalid grid.");
+        ROS_INFO("RRRRRRRRRRRRR3");
         return;
     }
     geometry_msgs::Point start_position3;
@@ -81,7 +88,7 @@ bool generate_path (geometry_msgs::Point start, const nav_msgs::OccupancyGrid& r
     ROS_DEBUG("Get map of divided area...");
 
  
-    nav_msgs::OccupancyGrid area = latest_robot1_grid;
+    nav_msgs::OccupancyGrid area = robot_occupancy_map;
 
     // ROS_INFO("Occupancy Grid Info:");
     // ROS_INFO("  Width: %d", area.info.width);
@@ -106,8 +113,10 @@ bool generate_path (geometry_msgs::Point start, const nav_msgs::OccupancyGrid& r
     path.initialize_map(area, 0, vertical);
     // Check here
     path.initialize_tree(tree.get_mst_edges());
-    if (path.generate_path(start) == false)
+    if (!path.generate_path(start)) {
+        ROS_WARN("Failed to generate path for ");
         return false;
+        }
     if (turning_points)
         path.reduce();
 
@@ -136,11 +145,14 @@ int main (int argc, char **argv)
     path_publisher1 = nh.advertise<nav_msgs::Path>("coverage_path/path1", 1, true);
     path_publisher2 = nh.advertise<nav_msgs::Path>("coverage_path/path2", 1, true);
     path_publisher3 = nh.advertise<nav_msgs::Path>("coverage_path/path3", 1, true);
-   
+  
+
     // Subscribers for the divided maps
     ros::Subscriber robot1_sub = nh.subscribe("robot1_grid", 10, robot1GridCallback);
     ros::Subscriber robot2_sub = nh.subscribe("robot2_grid", 10, robot2GridCallback);
     ros::Subscriber robot3_sub = nh.subscribe("robot3_grid", 10, robot3GridCallback);
+
+    
 
     ROS_INFO("Path generation action server available");
 
