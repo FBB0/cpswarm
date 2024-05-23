@@ -3,6 +3,7 @@
 
 std::mutex grid_mutex;  // Mutex for thread-safe access to grid variables
  
+int num_robots = 3;
 
 //Publishers
 ros::Publisher path_publisher1;

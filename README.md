@@ -17,3 +17,8 @@ roslaunch area_division area_division.launch
 ```
 roslaunch coverage_path coverage_path.launch
 ```
+
+
+
+
+As input publish to topic `area_division/robots'
