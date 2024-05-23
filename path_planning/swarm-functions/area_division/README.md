@@ -1,5 +1,7 @@
 # area_division
-This package is based on the area_division package from cpswarm (https://github.com/cpswarm/swarm_functions/tree/noetic-devel/area_division)
+This package is based on the area_division package from cpswarm (https://github.com/cpswarm/swarm_functions/tree/noetic-devel/area_division) and has been adapted by group 13 for RO47007 Multidisciplinary Project 2023-2024 of the TU Delft.
+
+This package was adapted by Felipe Bononi Bello (fbononibello@gmail.com).
 
 
 This package divides the available environment area among multiple robots in a swarm. 
@@ -8,8 +10,9 @@ This package divides the available environment area among multiple robots in a s
 This package depends on the following message definitions:
 * [geometry_msgs](https://wiki.ros.org/geometry_msgs)
 * [nav_msgs](https://wiki.ros.org/nav_msgs)
+* [geometry_msgs](http://wiki.ros.org/geometry_msgs)
 
-The area_division package needs an occupancy grid, which will be received from the perception team.
+The area_division package needs an occupancy grid, which will be received from the perception team. The occupancy grid will show where the static obstacles in the barn are.
 
 Further required packages are:
 * [roscpp](https://wiki.ros.org/roscpp/)
@@ -34,8 +37,8 @@ For further development the area_division could be made dynamic, by accounting f
   The behavior state of this CPS.
 * `swarm_state` ([cpswarm_msgs/ArrayOfStates](https://cpswarm.github.io/cpswarm_msgs/html/msg/ArrayOfStates.html))
   The behavior states of the other CPSs.-->
-* `pos_provider/pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html)) 
-  The current position of this CPS.
+<!-- * `pos_provider/pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html)) 
+  The current position of this CPS. -->
 * `area/map` ([nav_msgs/OccupancyGrid](http://docs.ros.org/api/nav_msgs/html/msg/OccupancyGrid.html))
   The map to be divided.
 <!-- * `bridge/uuid` ([swarmros/String](https://cpswarm.github.io/swarmio/swarmros/msg/String.html))
@@ -55,6 +58,8 @@ For further development the area_division could be made dynamic, by accounting f
 * `area/downsampled` ([nav_msgs/OccupancyGrid](http://docs.ros.org/api/nav_msgs/html/msg/OccupancyGrid.html))
   The area to be divided, downsampled to a lower resolution. For visualization purposes, only published if the parameter `visualize` is set to true. -->
 * ` nav_msgs/OccupancyGrid` per robot there exists a robot{i}_grid i for the number of the robot.
+
+* `geometry_msgs/Point` per robot there exists a point_R{i} i for the number of robots, to publish the starting point.
 
 <!-- #### Services Called
 * `area/get_rotation` ([cpswarm_msgs/GetDouble](https://cpswarm.github.io/cpswarm_msgs/html/srv/GetDouble.html))
