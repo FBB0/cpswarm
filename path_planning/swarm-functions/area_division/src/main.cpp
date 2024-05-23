@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
     area_division ad;
 
     // Larger sample occupancy grid (20x20)
+    
     vector<signed char> grid = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
@@ -76,6 +77,7 @@ int main(int argc, char **argv) {
     
     
     // Example usage of get_grid and publish the maps
+    // This will be replaced by the perception map
     nav_msgs::OccupancyGrid map;
     map.info.width = 20;
     map.info.height = 20;
