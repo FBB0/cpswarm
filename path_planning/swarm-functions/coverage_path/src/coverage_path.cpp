@@ -81,9 +81,6 @@ void robot3GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
         ROS_INFO("RRRRRRRRRRRRR3");
         return;
     }
-    geometry_msgs::Point start_position3;
-    start_position3.x = 1.0;
-    start_position3.y = 1.0;
 
     // Process the grid data for robot1
     latest_robot3_grid = *msg; // Store the latest grid
@@ -140,7 +137,7 @@ bool generate_path (geometry_msgs::Point start, const nav_msgs::OccupancyGrid& r
     // Check here
     path.initialize_tree(tree.get_mst_edges());
     if (!path.generate_path(start)) {
-        ROS_WARN("Failed to generate path for ");
+        ROS_WARN("Failed to generate path for the robottarting at (%.2f,%.2f)", start.x, start.y);
         return false;
         }
     if (turning_points)
