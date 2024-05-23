@@ -14,6 +14,11 @@ nav_msgs::OccupancyGrid latest_robot1_grid;
 nav_msgs::OccupancyGrid latest_robot2_grid;
 nav_msgs::OccupancyGrid latest_robot3_grid;
 
+//Shared variable to store starting positions
+geometry_msgs::Point start_position1;
+geometry_msgs::Point start_position2;
+geometry_msgs::Point start_position3;
+
 
 // Callback functions to handle incoming grid data for each robot
 void robot1GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
@@ -35,6 +40,13 @@ void robot1GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
     generate_path(start_position1, latest_robot1_grid, path_publisher1);
 }
 
+// Callback for Robot 1 starting position
+void robot1StartPositionCallback(const geometry_msgs::Point::ConstPtr& msg) {
+    std::lock_guard<std::mutex> lock(grid_mutex);
+    start_position1 = *msg;
+    ROS_INFO("Starting position for Robot 1 received - x: %f, y: %f", msg->x, msg->y);
+}
+
 void robot2GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
     ROS_INFO("Grid for Robot 2 received with width %d and height %d", msg->info.width, msg->info.height);
     std::lock_guard<std::mutex> lock(grid_mutex);
@@ -43,9 +55,9 @@ void robot2GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
         ROS_INFO("RRRRRRRRRRRRR2");
         return;
     }
-    geometry_msgs::Point start_position2;
-    start_position2.x = 19.0;
-    start_position2.y = 19.0;
+    // geometry_msgs::Point start_position2;
+    // start_position2.x = 19.0;
+    // start_position2.y = 19.0;
 
     // Process the grid data for robot1
     latest_robot2_grid = *msg; // Store the latest grid
@@ -53,6 +65,13 @@ void robot2GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
 
 
     generate_path(start_position2, latest_robot2_grid, path_publisher2);
+}
+
+// Callback for Robot 2 starting position
+void robot2StartPositionCallback(const geometry_msgs::Point::ConstPtr& msg) {
+    std::lock_guard<std::mutex> lock(grid_mutex);
+    start_position2 = *msg;
+    ROS_INFO("Starting position for Robot 2 received - x: %f, y: %f", msg->x, msg->y);
 }
 
 void robot3GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
@@ -71,6 +90,13 @@ void robot3GridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
 
 
     generate_path(start_position3, latest_robot3_grid, path_publisher3);
+}
+
+// Callback for Robot 3 starting position
+void robot3StartPositionCallback(const geometry_msgs::Point::ConstPtr& msg) {
+    std::lock_guard<std::mutex> lock(grid_mutex);
+    start_position3 = *msg;
+    ROS_INFO("Starting position for Robot 3 received - x: %f, y: %f", msg->x, msg->y);
 }
 /**
  * @brief Generate an optimal coverage path for a given area.
@@ -152,7 +178,11 @@ int main (int argc, char **argv)
     ros::Subscriber robot2_sub = nh.subscribe("robot2_grid", 10, robot2GridCallback);
     ros::Subscriber robot3_sub = nh.subscribe("robot3_grid", 10, robot3GridCallback);
 
-    
+    // Subscriber for the starting position of the Robots
+    ros::Subscriber startPosSub_R1 = nh.subscribe("R1_starting_pos", 10, robot1StartPositionCallback);
+    ros::Subscriber startPosSub_R2 = nh.subscribe("R2_starting_pos", 10, robot2StartPositionCallback);
+    ros::Subscriber startPosSub_R3 = nh.subscribe("R3_starting_pos", 10, robot3StartPositionCallback);
+
 
     ROS_INFO("Path generation action server available");
 
