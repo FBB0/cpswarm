@@ -1,6 +1,8 @@
 ## This is the repository of group 13 from the Multi Disciplinary Project
 In this document, all instructions to build the code and explanation about the implementation can be found.
 
+The code has been adapted originally by Felipe Bononi Bello (fbononibello@gmail.com) from group 13, isolating the code from the rest of the cpswarm package and allowing stand-alone execution. Ming Da Yang (m.d.yang@student.tudelft.nl) from group 15 contributed to the repository by refactoring the code to allow an arbitrary amount to be used to divide the area and generate that amount of paths.
+
 ### Path planning
 
 To run the path planning section one must create a mirte workspace in which you clone this repository inside of the `src` folder.
