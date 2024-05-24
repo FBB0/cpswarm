@@ -29,3 +29,4 @@ Currently you have to hard code the amount of robots by changing the `num_robots
 
 
 <!-- As input publish to topic `area_division/robots' -->
+
