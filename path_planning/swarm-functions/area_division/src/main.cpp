@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 
+
 int main(int argc, char **argv) {
     ros::init(argc, argv, "area_division_node");
     ros::NodeHandle nh;
@@ -43,13 +44,12 @@ int main(int argc, char **argv) {
     int map_height = 20;
     float resolution = 1.0;
     ad.initialize_map(map_height, map_width, grid);
-    int num_robots = 3;
+    int num_robots = 2;
 
     // Generate start_positions, removed using strings for robot names, just iterate
     map<string, vector<int>> cps_positions = {
-        {"robot0", {0, 0}},
-        {"robot1", {19, 19}}, 
-        {"robot2", {10,10}}
+        {"robot0", {11, 11}},
+        {"robot1", {10, 0}}
     };
 
     ad.initialize_cps(cps_positions);
