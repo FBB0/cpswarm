@@ -47,9 +47,9 @@ int main(int argc, char **argv) {
 
     // Generate start_positions, removed using strings for robot names, just iterate
     map<string, vector<int>> cps_positions = {
-        {"robot1", {0, 0}},
-        {"robot2", {19, 19}}, 
-        {"robot3", {1,1}}
+        {"robot0", {0, 0}},
+        {"robot1", {19, 19}}, 
+        {"robot2", {10,10}}
     };
 
     ad.initialize_cps(cps_positions);
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
     // Access the coordinates of the robots
     std::map<std::string, vector<int>> coordinates;
-    for (int i = 1; i <= num_robots; i++) {
+    for (int i = 0; i < num_robots; i++) {
         std::string robot_name = "robot" + std::to_string(i);
         coordinates[robot_name] = cps_positions[robot_name];
     }
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
     // Create geometry_msgs::Point messages for starting positions
     std::map<std::string, geometry_msgs::Point> points;
-    for (int i = 1; i <= num_robots; i++) {
+    for (int i = 0; i < num_robots; i++) {
         std::string robot_name = "robot" + std::to_string(i);
         geometry_msgs::Point point;
         point.x = coordinates[robot_name][0];
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     std::map<std::string, ros::Publisher> start_pos_pubs;
     std::map<std::string, nav_msgs::OccupancyGrid> robot_grids;
 
-    for (int i = 1; i <= num_robots; i++) {
+    for (int i = 0; i < num_robots; i++) {
         std::string robot_name = "robot" + std::to_string(i);
 
         nav_msgs::OccupancyGrid robot_grid = ad.get_grid(map, robot_name);
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 
     ros::Rate loop_rate(1); // 1 Hz
     while (ros::ok()) {
-        for (int i = 1; i <= num_robots; i++) {
+        for (int i = 0; i < num_robots; i++) {
             std::string robot_name = "robot" + std::to_string(i);
             std::string robot_grid_name = robot_name + "_grid";
             
