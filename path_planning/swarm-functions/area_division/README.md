@@ -1,7 +1,7 @@
 # area_division
-This package is based on the area_division package from cpswarm (https://github.com/cpswarm/swarm_functions/tree/noetic-devel/area_division) and has been adapted by group 13 for RO47007 Multidisciplinary Project 2023-2024 of the TU Delft.
+This package is based on the area_division package from cpswarm (https://github.com/cpswarm/swarm_functions/tree/noetic-devel/area_division) and has been adapted by group 13 and group 15 for RO47007 Multidisciplinary Project 2023-2024 of the TU Delft.
 
-This package was adapted by Felipe Bononi Bello (fbononibello@gmail.com).
+This package was adapted by Felipe Bononi Bello (fbononibello@gmail.com) and Ming Da Yang (m.d.yang@student.tudelft.nl).
 
 
 This package divides the available environment area among multiple robots in a swarm. 
@@ -59,7 +59,7 @@ For further development the area_division could be made dynamic, by accounting f
   The area to be divided, downsampled to a lower resolution. For visualization purposes, only published if the parameter `visualize` is set to true. -->
 * ` nav_msgs/OccupancyGrid` per robot there exists a robot{i}_grid i for the number of the robot.
 
-* `geometry_msgs/Point` per robot there exists a point_R{i} i for the number of robots, to publish the starting point.
+* `geometry_msgs/Point` per robot there exists a robot{i}_starting_pos i for the number of robots, to publish the starting point.
 
 <!-- #### Services Called
 * `area/get_rotation` ([cpswarm_msgs/GetDouble](https://cpswarm.github.io/cpswarm_msgs/html/srv/GetDouble.html))

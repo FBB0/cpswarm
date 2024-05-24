@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     area_division ad;
 
     // Larger sample occupancy grid (20x20)
-    
+    // TODO load occupancy grid from file
     vector<signed char> grid = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
