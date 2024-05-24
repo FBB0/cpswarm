@@ -46,13 +46,12 @@ int main(int argc, char **argv) {
     int num_robots = 3;
 
     // Generate start_positions, removed using strings for robot names, just iterate
-    std::map<std::string, std::vector<int>> cps_positions;
-    for (int i = 1; i <= num_robots; i++) {
-        std::string robot_name = "robot" + std::to_string(i);
-        int x = rand() % map_height;
-        int y = rand() % map_width;
-        cps_positions[robot_name] = {x, y};
-    }
+    map<string, vector<int>> cps_positions = {
+        {"robot1", {0, 0}},
+        {"robot2", {19, 19}}, 
+        {"robot3", {1,1}}
+    };
+
     ad.initialize_cps(cps_positions);
 
 

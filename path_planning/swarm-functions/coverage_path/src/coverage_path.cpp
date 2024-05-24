@@ -12,6 +12,11 @@ std::vector<ros::Subscriber> robot_subs;
 std::vector<geometry_msgs::Point> start_positions;
 std::vector<nav_msgs::OccupancyGrid> latest_robot_grid;
 
+// Global variables that the functions robotGridCallback and robotStartPositionCallback can use
+// because we cannot pass an integer through the callback function. If someone knows a more elegant solution
+// please open a pull request.
+int start_pos_identifier = 1;
+int robot_grid_identifier = 1;
 
 
 // //Publishers
@@ -30,7 +35,7 @@ std::vector<nav_msgs::OccupancyGrid> latest_robot_grid;
 // geometry_msgs::Point start_position3;
 
 // Callback functions to handle incoming grid data for each robot
-void robotGridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg, int robot_id) {
+void robotGridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
     
 
     std::lock_guard<std::mutex> lock(grid_mutex);
@@ -43,17 +48,17 @@ void robotGridCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg, int robot_i
     // start_position.y = 0.0;
 
      // Process the grid data for robot1
-    latest_robot_grid[robot_id] = *msg; // Store the latest grid
+    latest_robot_grid[robot_grid_identifier] = *msg; // Store the latest grid
 
 
-    generate_path(start_positions[robot_id], latest_robot_grid[robot_id], path_publisher);
+    generate_path(start_positions[robot_grid_identifier], latest_robot_grid[robot_grid_identifier], path_publishers[robot_grid_identifier]);
 }
 
 // Callback for Robot starting position
-void robotStartPositionCallback(const geometry_msgs::Point::ConstPtr& msg, int robot_id) {
+void robotStartPositionCallback(const geometry_msgs::Point::ConstPtr& msg) {
     std::lock_guard<std::mutex> lock(grid_mutex);
-    start_positions[robot_id] = *msg;
-    ROS_INFO("Starting position for Robot " + std::to_string(robot_id) + " received - x: %f, y: %f", msg->x, msg->y);
+    start_positions[start_pos_identifier] = *msg;
+    ROS_INFO("Starting position for Robot received - x: %f, y: %f", msg->x, msg->y);
 }
 
 
@@ -99,7 +104,7 @@ bool generate_path (geometry_msgs::Point start, const nav_msgs::OccupancyGrid& r
     // Check here
     path.initialize_tree(tree.get_mst_edges());
     if (!path.generate_path(start)) {
-        ROS_WARN("Failed to generate path for the robottarting at (%.2f,%.2f)", start.x, start.y);
+        ROS_WARN("Failed to generate path for the robot starting at (%.2f,%.2f)", start.x, start.y);
         return false;
         }
     if (turning_points)
@@ -152,7 +157,8 @@ int main (int argc, char **argv)
 
     // Subscribers for the divided maps
     for (int i = 0; i <= num_robots; i++) {
-        robot_subs.push_back(nh.subscribe("area_division/robot" + std::to_string(i) + "_grid", 10, boost::bind(robotGridCallback, _1, i)));
+        robot_grid_identifier = i;
+        robot_subs.push_back(nh.subscribe("area_division/robot" + std::to_string(i) + "_grid", 10, robotGridCallback));
     }
 
     // ros::Subscriber robot1_sub = nh.subscribe("area_division/robot1_grid", 10, robot1GridCallback);
@@ -162,7 +168,8 @@ int main (int argc, char **argv)
     // Subscriber for the starting position of the Robots
     std::vector<ros::Subscriber> startPosSubs;
     for (int i = 0; i <= num_robots; i++) {
-        startPosSubs.push_back(nh.subscribe("area_division/R" + std::to_string(i) + "_starting_pos", 10, boost::bind(robotStartPositionCallback, _1, i)));
+        start_pos_identifier = i ;
+        startPosSubs.push_back(nh.subscribe("area_division/robot" + std::to_string(i) + "_starting_pos", 10, robotStartPositionCallback));
     }
 
     // ros::Subscriber startPosSub_R1 = nh.subscribe("R1_starting_pos", 10, robot1StartPositionCallback);
