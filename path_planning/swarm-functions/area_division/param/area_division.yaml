@@ -1,0 +1,10 @@
+#This is currently not used for the project, but should be looked into 
+loop_rate:        1.5    # The frequency in Hz at which to run the control loops.
+queue_size:       10     # The size of the message queue used for publishing and subscribing to topics.
+resolution:       0.3    # The grid map underlying the area division will be downsampled to this resolution in meter / cell.
+visualize:        true   # Whether to publish the area division on a topic for visualization.
+
+optimizer:
+  iterations:     10000    # Maximum number of iterations of the optimization algorithm.
+  variate_weight: 0.01   # Maximum variate weight of connected components.
+  discrepancy:    30     # Maximum difference between number of assigned grid cells to each CPS.
