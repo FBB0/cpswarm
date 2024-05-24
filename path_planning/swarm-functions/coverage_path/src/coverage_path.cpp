@@ -18,9 +18,7 @@ class PathGenerator {
         ros::NodeHandle nh;
 
         //Constructor
-        PathGenerator(int id, ros::NodeHandle nh) {
-            robot_id = id;
-            nh = nh;
+        PathGenerator(int id, ros::NodeHandle nodehandle) : robot_id(id), nh(nodehandle){
             ROS_INFO_STREAM("/area_division/robot" + std::to_string(robot_id) + "_grid");
             ROS_INFO_STREAM("/area_division/robot" + std::to_string(robot_id) + "_starting_pos");
             robotStartPositionSub = nh.subscribe("/area_division/robot" + std::to_string(robot_id) + "_starting_pos", 10, &PathGenerator::robotStartPositionCallback, this);
@@ -36,6 +34,7 @@ class PathGenerator {
                 return;
             }
             ROS_INFO("Received Grid for Robot %i", robot_id);
+            std::cout << robot_id << std::endl;
             // Process the grid data for robot
             latest_robot_grid = *msg; // Store the latest grid
             
@@ -120,10 +119,10 @@ int main (int argc, char **argv)
     init(argc, argv, "coverage_path");
     NodeHandle nh;
 
-    std::vector<PathGenerator> path_objects;
+    std::vector<PathGenerator*> path_objects;
 
     for (int i = 0; i < num_robots; i++) {
-        path_objects.push_back(PathGenerator(i, nh));
+        path_objects.push_back(new PathGenerator(i, nh));
         ROS_INFO("PathGenerator %i created", i);
     }
     
