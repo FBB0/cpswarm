@@ -6,6 +6,35 @@
 #include <map>
 #include <string>
 
+class GridMap {
+    public:
+        nav_msgs::OccupancyGrid occup_grid;
+        std::vector<signed char> grid;
+        // Dummy variables so nothing breaks
+        int width = 10;
+        int height = 10;
+        float resolution = 1.0;
+        ros::NodeHandle nh;
+        ros::Subscriber sub;
+
+        GridMap(ros::NodeHandle nodehandle) : nh(nodehandle) {
+            ROS_INFO("Subscribing to map topic");
+            sub = nh.subscribe<nav_msgs::OccupancyGrid>("/map", 1, &GridMap::grid_callback, this)
+        }
+
+    void grid_callback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
+        occup_grid = msg;
+        width = msg.info.width;
+        height = msg.info.height;
+        resolution = msg.info.resolution;
+        grid = msg.data;
+        ROS_INFO("Received map!");
+        ROS_INFO("Width: %d, Height: %d, Resolution: %f", map.info.width, map.info.height, map.info.resolution);
+    }
+};
+
+
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "area_division_node");
@@ -15,35 +44,11 @@ int main(int argc, char **argv) {
 
     // Larger sample occupancy grid (20x20)
     // TODO load occupancy grid from file
-    vector<signed char> grid = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-        0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0
-    };
+    GridMap gridmap(nh);
 
     // Initialize map
-    // The map is a 20x20 grid
-    int map_width = 20;
-    int map_height = 20;
-    float resolution = 1.0;
-    ad.initialize_map(map_height, map_width, grid);
+
+    ad.initialize_map(gridmap.height, gridmap.width, gridmap.grid);
     int num_robots = 2;
 
     // Generate start_positions, removed using strings for robot names, just iterate
@@ -76,11 +81,7 @@ int main(int argc, char **argv) {
     // Perform area division
     ad.divide();
 
-    nav_msgs::OccupancyGrid map;
-    map.info.width = map_height;
-    map.info.height = map_width;
-    map.info.resolution = resolution;  // Each cell represents 1x1 meter
-    map.data = grid;
+
 
     // Publishers for the divided maps
     std::map<std::string, ros::Publisher> robot_pubs;
