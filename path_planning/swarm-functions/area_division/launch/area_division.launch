@@ -1,3 +1,5 @@
 <launch>
-    <node pkg="area_division" type="area_division_node" name="area_division_node" output="screen" ns="area_division"/>
+    <node pkg="area_division" type="area_division_node" name="area_division_node" output="screen" ns="area_division">
+        <rosparam file="$(find area_division)/param/area_division.yaml" command="load" />
+    </node>
 </launch>

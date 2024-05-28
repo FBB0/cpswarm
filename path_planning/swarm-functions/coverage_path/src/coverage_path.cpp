@@ -5,7 +5,7 @@
 
 std::mutex grid_mutex;  // Mutex for thread-safe access to grid variables
  
-int num_robots = 2;
+int num_robots = 1;
 
 class PathGenerator {
     public:

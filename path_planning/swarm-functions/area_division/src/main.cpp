@@ -76,8 +76,7 @@ int main(int argc, char **argv) {
 
     // Start the grid map susbscriber to the /map topic
     GridMap gridmap(nh);
-    int num_robots = 2;
-
+    int num_robots = 1;
 
 
     ROS_INFO("Create publishers");
@@ -105,8 +104,8 @@ int main(int argc, char **argv) {
         ROS_INFO("Initializing CPSs");
         // Generate start_positions, removed using strings for robot names, just iterate
         map<string, vector<int>> cps_positions = {
-            {"robot0", {11, 11}},
-            {"robot1", {10, 0}}
+            {"robot0", {-1, 2}}
+            // {"robot1", {0, 0}}
         };
 
         ad.initialize_cps(cps_positions);
@@ -133,7 +132,7 @@ int main(int argc, char **argv) {
         ROS_INFO("Perform area division");
         // Perform area division
         ad.divide();
-
+        ROS_INFO("Divided areas");
         for (int i = 0; i < num_robots; i++) {
             std::string robot_name = "robot" + std::to_string(i);
             std::string robot_grid_name = robot_name + "_grid";
