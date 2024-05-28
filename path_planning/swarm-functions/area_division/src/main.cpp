@@ -49,8 +49,17 @@ class GridMap {
             width = occup_grid.info.width;
             height = occup_grid.info.height;
             resolution = occup_grid.info.resolution;
+            
+            // Remove all -1, code does not account of unexplored areas
+            for (int i = 0; i < occup_grid.data.size(); ++i) {
+            if (occup_grid.data[i] == -1) {
+                occup_grid.data[i] = 100;
+            }
+            }
             grid = occup_grid.data;
             ROS_INFO("Received map!");
+            
+
             ROS_INFO("Width: %d, Height: %d, Resolution: %f", width, height, resolution);
         }
 
