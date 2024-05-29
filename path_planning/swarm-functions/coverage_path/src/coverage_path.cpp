@@ -5,7 +5,7 @@
 
 std::mutex grid_mutex;  // Mutex for thread-safe access to grid variables
  
-int num_robots = 1;
+int num_robots = 2;
 
 class PathGenerator {
     public:
@@ -125,8 +125,9 @@ int main (int argc, char **argv)
     ros::Rate loop_rate(0.2);
     while(ros::ok()) {
         ROS_INFO("Path generation action server available");
-
+        
         ros::spinOnce();
+        loop_rate.sleep();
     }
     return 0;
 }

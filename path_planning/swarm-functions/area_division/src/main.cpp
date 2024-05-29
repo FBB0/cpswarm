@@ -20,12 +20,7 @@ class GlobalGrid {
 
         void grid_callback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
             occup_grid = *msg;
-            for (int i = 0; i < occup_grid.data.size(); i++) {
-                ROS_INFO("Data: %d", occup_grid.data[i]);
-                if (occup_grid.data[i] == -1) {
-                    occup_grid.data[i] = 100;
-                }
-            }
+
             map_received = true;
             ROS_INFO("Map received: width=%d, height=%d", occup_grid.info.width, occup_grid.info.height);
         }
@@ -77,9 +72,16 @@ int main(int argc, char **argv) {
 
     // For now manually set the positin of a robot
     geometry_msgs::Point temp;
-    temp.x = 120.0;
-    temp.y = 30.0;
+    // temp.x = 120.0;
+    // temp.y = 30.0;
+    temp.x = 1.0;
+    temp.y = 1.0;
     robots[0].position = temp;
+
+    // geometry_msgs::Point temp2;
+    // temp2.x = 19.0;
+    // temp2.y = 19.0;
+    // robots[1].position = temp2;
 
     GlobalGrid global_grid(nh);
 
@@ -97,7 +99,7 @@ int main(int argc, char **argv) {
                 int x = int(robots[i].position.x);
                 int y = int(robots[i].position.y);
                 std::vector<int> pos = {x, y};
-                ROS_INFO("Robot %s position: %d, %d", robot_name.c_str(), x, y);
+                ROS_INFO("%s position: %d, %d", robot_name.c_str(), x, y);
                 cps_positions[robot_name] = pos;
             }
             ad.initialize_cps(cps_positions);
@@ -109,6 +111,11 @@ int main(int argc, char **argv) {
             for (int i = 0; i < num_robots; i++) {
                 std::string robot_name = "robot" + std::to_string(i);
                 robots[i].robot_grid = ad.get_grid(global_grid.occup_grid, robot_name);
+                for (int j = 0; j < global_grid.occup_grid.data.size(); ++j) {
+                    if (global_grid.occup_grid.data[j] == -1) {
+                        robots[i].robot_grid.data[j] = 100;
+                    }
+                }
                 robots[i].publish_grid();
                 robots[i].publish_start_pos();
             }

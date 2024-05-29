@@ -6,7 +6,7 @@ area_division::area_division ()
     NodeHandle nh;
     nh.param(this_node::getName() + "/optimizer/iterations", max_iter, 1000);
     nh.param(this_node::getName() + "/optimizer/variate_weight", variate_weight, 0.01);
-    nh.param(this_node::getName() + "/optimizer/discrepancy", discr, 100);
+    nh.param(this_node::getName() + "/optimizer/discrepancy", discr, 30);
 }
 
 void area_division::divide ()
@@ -140,29 +140,20 @@ nav_msgs::OccupancyGrid area_division::get_grid (nav_msgs::OccupancyGrid map, st
 {
     // create new grid map
     nav_msgs::OccupancyGrid assigned;
-    //ssigned.data = gridmap;
-    //assigned.data=gridmap
-    assigned.data=[0,100,0,0,0,100]
-    // for (int i=0; i<rows; i++) {
-    //     for (int j=0; j<cols;j++) {
-    //         if (gridmap[i*cols+j]==127){
-    //             assigned.data[i*cols+j]=100
-    //         }
-    //         // mark assigned cells as free
-    //         else if (A[i*cols+j] == uuid_map[cps]) {
-    //             assigned.data[i*cols+j] = CELL_FREE;
-    //         }
+    assigned = map;
 
-    //         // mark cells assigned to other cpss as obstacles
-    //         else {  // Ensure to skip the special value
-    //             assigned.data[i*cols+j] = 100;
-    //         }
-
-    //         // else {
-    //         //     assigned.data[i*cols+j] = CELL_OCCUPIED;
-    //         // }
-    //  }
-    //  }
+    for (int i=0; i<rows; i++) {
+        for (int j=0; j<cols;j++) {
+            // mark assigned cells as free
+            if (A[i*cols+j] == uuid_map[cps]) {
+                assigned.data[i*cols+j] = CELL_FREE;
+            } 
+            // mark cells assigned to other cpss as obstacles
+            else {
+                assigned.data[i*cols+j] = CELL_OCCUPIED;
+            }
+        }
+    }
 
     assigned.header.stamp = Time::now();
     assigned.info.map_load_time == Time::now();
@@ -172,7 +163,6 @@ nav_msgs::OccupancyGrid area_division::get_grid (nav_msgs::OccupancyGrid map, st
 
 void area_division::initialize_cps (map<string, vector<int>> cpss)
 {
-    ROS_INFO("First step inside...");
     // initialize
     nr = 0;
     cps.clear();
@@ -180,32 +170,26 @@ void area_division::initialize_cps (map<string, vector<int>> cpss)
     A.resize(rows*cols);
     regions.clear();
     regions.resize(cpss.size());
-    ROS_INFO("Second step inside...");
+
     // place cpss in the map
     for (auto c : cpss) {
         // divison algorithm assumes origin at top left
         int x = c.second[0];
         int y = c.second[1];
-        ROS_INFO("Third step inside...");
+
         // index of position in grid map
         int idx = y * cols + x;
-        ROS_INFO("Fourth step inside...");
+
         ROS_DEBUG("CPS %d (%s) at (%d,%d) index %d", nr, c.first.c_str(), x, y, idx);
-
-        if (gridmap[idx] == 127) {
-            ROS_WARN("Skipping CPS %s at (%d, %d) due to unexplored cell", c.first.c_str(), x, y);
-            continue;
-        }
-
 
         // place cps in data structures
         gridmap[idx] = numeric_limits<signed char>::max();
         A[idx] = nr;
-        ROS_INFO("Fifth step inside...");
+
         // store cps position and mapping of uuid
         cps.push_back(initializer_list<int>{x,y});
         uuid_map[c.first] = nr;
-        ROS_INFO("Sixth step inside...");
+
         // count number of cpss
         nr++;
     }
@@ -223,21 +207,12 @@ void area_division::initialize_map (int r, int c, vector<signed char> src)
     for (int i=0; i<gridmap.size(); ++i)
         if (gridmap[i] >= 50)
             ++ob;
-        else if (gridmap[i]==-1)
-        {
-            gridmap[i]=127;
-            ++ob;}
-        else
-            gridmap[i]=0;
 
     ROS_DEBUG("There are %d occupied cells.", ob);
 }
 
 void area_division::assign (vector<valarray<double>> matrix)
 {
-    
-    
-    
     BWlist.resize(nr);
     for (int r=0; r<nr; r++) {
         BWlist[r].resize(rows*cols);
@@ -267,13 +242,9 @@ void area_division::assign (vector<valarray<double>> matrix)
             }
 
             // obstacle
-            else if (gridmap[i*cols+j] >= 50 && gridmap[i*cols+j] != 127) {  // Ensure to skip the special value
+            else if (gridmap[i*cols+j] < numeric_limits<signed char>::max()) {
                 A[i*cols+j] = nr;
             }
-
-            // else if (gridmap[i*cols+j] < numeric_limits<signed char>::max()) {
-            //     A[i*cols+j] = nr;
-            // }
         }
     }
 }
@@ -285,20 +256,16 @@ valarray<float> area_division::CalcConnectedMultiplier(valarray<float> dist1, va
     float MinV = numeric_limits<float>::max();
     for (int i=0;i<rows;i++){
         for (int j=0;j<cols;j++){
-            if(gridmap[i*cols+j]!=127){
             returnM[i*cols+j] = dist1[i*cols+j] - dist2[i*cols+j];
             if (MaxV < returnM[i*cols+j]) {MaxV = returnM[i*cols+j];}
             if (MinV > returnM[i*cols+j]) {MinV = returnM[i*cols+j];}
-        }
         }
     }
 
     for (int i=0;i<rows;i++){
         for (int j=0;j<cols;j++){
-            if(gridmap[i*cols+j]!=127){
             returnM[i*cols+j] =(returnM[i*cols+j] - MinV)*((2*(float)variate_weight)/(MaxV-MinV))+(1-(float)variate_weight);
         }
-    }
     }
 
     return  returnM;
