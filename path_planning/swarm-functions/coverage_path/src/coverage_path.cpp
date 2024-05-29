@@ -37,7 +37,6 @@ class PathGenerator {
             std::cout << robot_id << std::endl;
             // Process the grid data for robot
             latest_robot_grid = *msg; // Store the latest grid
-            
 
             // generate_path(start_position, latest_robot_grid, path_publisher);
             generate_path();
@@ -114,23 +113,21 @@ class PathGenerator {
  */
 int main (int argc, char **argv)
 {
-
-     // init ros node
+    // init ros node
     init(argc, argv, "coverage_path");
     NodeHandle nh;
-
     std::vector<PathGenerator*> path_objects;
 
     for (int i = 0; i < num_robots; i++) {
         path_objects.push_back(new PathGenerator(i, nh));
-        ROS_INFO("PathGenerator %i created", i);
+        ROS_INFO("PathGenerator %i created", i );
     }
-    
+    ros::Rate loop_rate(0.2);
+    while(ros::ok()) {
+        ROS_INFO("Path generation action server available");
 
-    ROS_INFO("Path generation action server available");
-
-    spin();
-
+        ros::spinOnce();
+    }
     return 0;
 }
 

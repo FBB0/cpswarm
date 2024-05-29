@@ -6,160 +6,117 @@
 #include <map>
 #include <string>
 
-class GridMap {
+
+class GlobalGrid {
     public:
         nav_msgs::OccupancyGrid occup_grid;
-        vector<signed char> grid = {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0,
-            0, 0, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 100, 0, 0
-        };
-        // Dummy variables so nothing breaks
-        int width = 20;
-        int height = 20;
-        float resolution = 1.0;
+        bool map_received = false;
+        ros::Subscriber grid_sub;
         ros::NodeHandle nh;
-        ros::Subscriber sub;
 
-        GridMap(ros::NodeHandle nodehandle) : nh(nodehandle) {
-            ROS_INFO("Subscribing to map topic");
-            sub = nh.subscribe<nav_msgs::OccupancyGrid>("/map", 1, &GridMap::grid_callback, this);
-            ROS_INFO("Subscribed, exiting object");
+        GlobalGrid (ros::NodeHandle nodehandle) : nh(nodehandle) {
+            grid_sub = nh.subscribe<nav_msgs::OccupancyGrid>("/map", 1, &GlobalGrid::grid_callback, this);
         }
 
         void grid_callback(const nav_msgs::OccupancyGrid::ConstPtr& msg) {
             occup_grid = *msg;
-            width = occup_grid.info.width;
-            height = occup_grid.info.height;
-            resolution = occup_grid.info.resolution;
-            
-            // Remove all -1, code does not account of unexplored areas
-            for (int i = 0; i < occup_grid.data.size(); ++i) {
-            if (occup_grid.data[i] == -1) {
-                occup_grid.data[i] = 100;
+            for (int i = 0; i < occup_grid.data.size(); i++) {
+                ROS_INFO("Data: %d", occup_grid.data[i]);
+                if (occup_grid.data[i] == -1) {
+                    occup_grid.data[i] = 100;
+                }
             }
-            }
-            grid = occup_grid.data;
-            ROS_INFO("Received map!");
-            
-
-            ROS_INFO("Width: %d, Height: %d, Resolution: %f", width, height, resolution);
+            map_received = true;
+            ROS_INFO("Map received: width=%d, height=%d", occup_grid.info.width, occup_grid.info.height);
         }
 
-        nav_msgs::OccupancyGrid get_occupancy_grid() {
-            // for some reason this works and returnignt the message immediately doesn't
-            // so I am gonna use this ugly fix for now
-            nav_msgs::OccupancyGrid temp;
-            temp.info.width = width;
-            temp.info.height = height;
-            temp.info.resolution = resolution;
-            temp.data = grid;
-            return temp;
-        }
 };
 
+class Robot {
+    public:
+        ros::Publisher robot_pub;
+        ros::Publisher start_pos_pub;
+        ros::NodeHandle nh;
+        nav_msgs::OccupancyGrid robot_grid;
+        int id;
+        geometry_msgs::Point position;
 
+    Robot (int id, ros::NodeHandle nodehandle, geometry_msgs::Point position) : id(id),  nh(nodehandle), position(position){
+        robot_pub = nh.advertise<nav_msgs::OccupancyGrid>("robot" + std::to_string(id) + "_grid", 10);
+        start_pos_pub = nh.advertise<geometry_msgs::Point>("robot" + std::to_string(id) + "_starting_pos", 1);
+    }
 
+    void publish_grid() {
+        robot_pub.publish(robot_grid);
+    }
+    void publish_start_pos() {
+        start_pos_pub.publish(position);
+    }
+};
 
 int main(int argc, char **argv) {
+    // Initialize ROS
     ros::init(argc, argv, "area_division_node");
     ros::NodeHandle nh;
+
+    // Get the number of robots from the parameter server or default to 1
+    int num_robots;
+    nh.param("num_robots", num_robots, 1);
+
+    // Initialize area division object
     area_division ad;
 
-    // Start the grid map susbscriber to the /map topic
-    GridMap gridmap(nh);
-    int num_robots = 1;
-
-
-    ROS_INFO("Create publishers");
-    // Publishers for the divided maps
-    std::map<std::string, ros::Publisher> robot_pubs;
-    std::map<std::string, ros::Publisher> start_pos_pubs;
-    std::map<std::string, nav_msgs::OccupancyGrid> robot_grids;
-
+    // Create publishers for each robot
+    std::vector<Robot> robots;
     for (int i = 0; i < num_robots; i++) {
-        std::string robot_name = "robot" + std::to_string(i);
-
-        ros::Publisher robot_pub = nh.advertise<nav_msgs::OccupancyGrid>(robot_name + "_grid", 10);
-        ros::Publisher start_pos_pub = nh.advertise<geometry_msgs::Point>(robot_name + "_starting_pos", 1);
-
-        robot_pubs[robot_name] = robot_pub;
-        start_pos_pubs[robot_name] = start_pos_pub;
+        geometry_msgs::Point temp;
+        temp.x = 214.0;
+        temp.y = 2.0;
+        robots.push_back(Robot(i, nh, temp));
     }
+
+    // For now manually set the positin of a robot
+    geometry_msgs::Point temp;
+    temp.x = 120.0;
+    temp.y = 30.0;
+    robots[0].position = temp;
+
+    GlobalGrid global_grid(nh);
 
     ros::Rate loop_rate(1); // 1 Hz
     while (ros::ok()) {
-        // Initialize map
-        ROS_INFO("Initializing map");
-        ad.initialize_map(gridmap.height, gridmap.width, gridmap.grid);
+        if (global_grid.map_received) {
+            ROS_INFO("Processing received map...");
 
-        ROS_INFO("Initializing CPSs");
-        // Generate start_positions, removed using strings for robot names, just iterate
-        map<string, vector<int>> cps_positions = {
-            {"robot0", {-1, 2}}
-            // {"robot1", {0, 0}}
-        };
+            ad.initialize_map(global_grid.occup_grid.info.width, global_grid.occup_grid.info.height, global_grid.occup_grid.data);
 
-        ad.initialize_cps(cps_positions);
+            // Initialize CPS positions (ensure it's updated based on the number of robots)
+            std::map<std::string, std::vector<int>> cps_positions;
+            for (int i = 0; i < num_robots; i++) {
+                std::string robot_name = "robot" + std::to_string(i);
+                int x = int(robots[i].position.x);
+                int y = int(robots[i].position.y);
+                std::vector<int> pos = {x, y};
+                ROS_INFO("Robot %s position: %d, %d", robot_name.c_str(), x, y);
+                cps_positions[robot_name] = pos;
+            }
+            ad.initialize_cps(cps_positions);
 
-        ROS_INFO("Access the coordinates of the robots");
-        // Access the coordinates of the robots
-        std::map<std::string, vector<int>> coordinates;
-        for (int i = 0; i < num_robots; i++) {
-            std::string robot_name = "robot" + std::to_string(i);
-            coordinates[robot_name] = cps_positions[robot_name];
+            ROS_INFO("Dividing area");
+            // Divide the area
+            ad.divide();
+
+            for (int i = 0; i < num_robots; i++) {
+                std::string robot_name = "robot" + std::to_string(i);
+                robots[i].robot_grid = ad.get_grid(global_grid.occup_grid, robot_name);
+                robots[i].publish_grid();
+                robots[i].publish_start_pos();
+            }
+            ROS_INFO("Processed map and published information");
         }
-        
-        ROS_INFO("Create geometry_msgs::Point messages for starting positions");
-        // Create geometry_msgs::Point messages for starting positions
-        std::map<std::string, geometry_msgs::Point> points;
-        for (int i = 0; i < num_robots; i++) {
-            std::string robot_name = "robot" + std::to_string(i);
-            geometry_msgs::Point point;
-            point.x = coordinates[robot_name][0];
-            point.y = coordinates[robot_name][1];
-            points[robot_name] = point;
-        }
-
-        ROS_INFO("Perform area division");
-        // Perform area division
-        ad.divide();
-        ROS_INFO("Divided areas");
-        for (int i = 0; i < num_robots; i++) {
-            std::string robot_name = "robot" + std::to_string(i);
-            std::string robot_grid_name = robot_name + "_grid";
-            nav_msgs::OccupancyGrid total_occupancy_grid = gridmap.get_occupancy_grid();
-            ROS_INFO("Got large occupancy map");
-            nav_msgs::OccupancyGrid robot_grid = ad.get_grid(total_occupancy_grid, robot_name);
-            ROS_INFO("Created individual robot grid");
-            
-            robot_grids[robot_name] = robot_grid;
-            robot_pubs[robot_name].publish(robot_grids[robot_name]);
-            start_pos_pubs[robot_name].publish(points[robot_name]);
-            
-
-        }
-        ROS_INFO("Publishing found area's");
-        ros::spinOnce();
         loop_rate.sleep();
+        global_grid.map_received = false;
+        ros::spinOnce();
     }
-
     return 0;
 }

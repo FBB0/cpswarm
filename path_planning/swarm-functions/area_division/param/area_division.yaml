@@ -5,6 +5,6 @@ resolution:       0.3    # The grid map underlying the area division will be dow
 visualize:        true   # Whether to publish the area division on a topic for visualization.
 
 optimizer:
-  iterations:     1000000000    # Maximum number of iterations of the optimization algorithm.
+  iterations:     1000    # Maximum number of iterations of the optimization algorithm.
   variate_weight: 0.01   # Maximum variate weight of connected components.
   discrepancy:    30     # Maximum difference between number of assigned grid cells to each CPS.
