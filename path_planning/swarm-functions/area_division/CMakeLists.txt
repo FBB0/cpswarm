@@ -5,12 +5,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   nav_msgs
+  geometry_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES area_division_lib
-  CATKIN_DEPENDS roscpp std_msgs nav_msgs
+  CATKIN_DEPENDS roscpp std_msgs nav_msgs geometry_msgs
 )
 
 include_directories(

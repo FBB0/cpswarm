@@ -12,4 +12,6 @@
         <rosparam file="$(find coverage_path)/param/coverage_path.yaml" command="load" />
         <param name="/rosconsole/level" value="debug"/>
     </node>
+
+    <node pkg="rviz" type="rviz" name="rviz_area" required="true" args="-d $(find coverage_path)/rviz/coverage_path.rviz" />
 </launch>

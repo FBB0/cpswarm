@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <vector>
 #include <map>
 #include <string>
@@ -31,6 +32,7 @@ class Robot {
     public:
         ros::Publisher robot_pub;
         ros::Publisher start_pos_pub;
+        ros::Subscriber amcl_pos_sub;
         ros::NodeHandle nh;
         nav_msgs::OccupancyGrid robot_grid;
         int id;
@@ -39,6 +41,7 @@ class Robot {
     Robot (int id, ros::NodeHandle nodehandle, geometry_msgs::Point position) : id(id),  nh(nodehandle), position(position){
         robot_pub = nh.advertise<nav_msgs::OccupancyGrid>("robot" + std::to_string(id) + "_grid", 10);
         start_pos_pub = nh.advertise<geometry_msgs::Point>("robot" + std::to_string(id) + "_starting_pos", 1);
+        amcl_pos_sub = nh.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &Robot::amcl_pos_callback, this);
     }
 
     void publish_grid() {
@@ -46,6 +49,11 @@ class Robot {
     }
     void publish_start_pos() {
         start_pos_pub.publish(position);
+    }
+
+    void amcl_pos_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
+        position = msg->pose.pose.position;
+        ROS_INFO("Robot %d position: x=%f, y=%f", id, position.x, position.y);
     }
 };
 
@@ -70,18 +78,18 @@ int main(int argc, char **argv) {
         robots.push_back(Robot(i, nh, temp));
     }
 
-    // For now manually set the positin of a robot
-    geometry_msgs::Point temp;
+    // // For now manually set the positin of a robot
+    // geometry_msgs::Point temp;
     // temp.x = 120.0;
     // temp.y = 30.0;
-    temp.x = 1.0;
-    temp.y = 1.0;
-    robots[0].position = temp;
+    // // temp.x = 1.0;
+    // // temp.y = 1.0;
+    // robots[0].position = temp;
 
-    // geometry_msgs::Point temp2;
-    // temp2.x = 19.0;
-    // temp2.y = 19.0;
-    // robots[1].position = temp2;
+    // // geometry_msgs::Point temp2;
+    // // temp2.x = 19.0;
+    // // temp2.y = 19.0;
+    // // robots[1].position = temp2;
 
     GlobalGrid global_grid(nh);
 
