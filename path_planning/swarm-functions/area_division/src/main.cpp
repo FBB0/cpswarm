@@ -37,6 +37,7 @@ class Robot {
         nav_msgs::OccupancyGrid robot_grid;
         int id;
         geometry_msgs::Point position;
+        bool received_pos = false;
 
     Robot (int id, ros::NodeHandle nodehandle, geometry_msgs::Point position) : id(id),  nh(nodehandle), position(position){
         robot_pub = nh.advertise<nav_msgs::OccupancyGrid>("robot" + std::to_string(id) + "_grid", 10);
@@ -52,6 +53,9 @@ class Robot {
     }
 
     void amcl_pos_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
+        if received_pos {
+            return;
+        }
         position = msg->pose.pose.position;
         ROS_INFO("Robot %d position: x=%f, y=%f", id, position.x, position.y);
     }
